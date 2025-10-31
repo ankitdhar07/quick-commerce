@@ -1,0 +1,246 @@
+version: '3.9'
+
+services:
+  # Service Registry
+  eureka-server:
+    image: openjdk:21-slim
+    container_name: quickcommerce-eureka
+    working_dir: /app
+    volumes:
+      - ./eureka-server:/app
+    ports:
+      - "8761:8761"
+    environment:
+      - JAVA_TOOL_OPTIONS=-Xmx512m
+    command: sh -c "cd /app && mvn spring-boot:run"
+    depends_on:
+      - zookeeper
+      - kafka
+    networks:
+      - quickcommerce
+
+  # API Gateway
+  api-gateway:
+    image: openjdk:21-slim
+    container_name: quickcommerce-api-gateway
+    working_dir: /app
+    volumes:
+      - ./api-gateway:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - JAVA_TOOL_OPTIONS=-Xmx512m
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    command: sh -c "cd /app && mvn spring-boot:run"
+    depends_on:
+      - eureka-server
+    networks:
+      - quickcommerce
+
+  # Product Service
+  product-service:
+    image: openjdk:21-slim
+    container_name: quickcommerce-product
+    working_dir: /app
+    volumes:
+      - ./product-service:/app
+    ports:
+      - "8001:8001"
+    environment:
+      - JAVA_TOOL_OPTIONS=-Xmx512m
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-product:5432/quickcommerce_product
+      - SPRING_DATASOURCE_USERNAME=quickcommerce_user
+      - SPRING_DATASOURCE_PASSWORD=quickcommerce_pass123
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    command: sh -c "cd /app && mvn spring-boot:run"
+    depends_on:
+      - eureka-server
+      - postgres-product
+      - kafka
+    networks:
+      - quickcommerce
+
+  # Order Service
+  order-service:
+    image: openjdk:21-slim
+    container_name: quickcommerce-order
+    working_dir: /app
+    volumes:
+      - ./order-service:/app
+    ports:
+      - "8002:8002"
+    environment:
+      - JAVA_TOOL_OPTIONS=-Xmx512m
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-order:5432/quickcommerce_order
+      - SPRING_DATASOURCE_USERNAME=quickcommerce_user
+      - SPRING_DATASOURCE_PASSWORD=quickcommerce_pass123
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    command: sh -c "cd /app && mvn spring-boot:run"
+    depends_on:
+      - eureka-server
+      - postgres-order
+      - kafka
+    networks:
+      - quickcommerce
+
+  # Payment Service
+  payment-service:
+    image: openjdk:21-slim
+    container_name: quickcommerce-payment
+    working_dir: /app
+    volumes:
+      - ./payment-service:/app
+    ports:
+      - "8003:8003"
+    environment:
+      - JAVA_TOOL_OPTIONS=-Xmx512m
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-payment:5432/quickcommerce_payment
+      - SPRING_DATASOURCE_USERNAME=quickcommerce_user
+      - SPRING_DATASOURCE_PASSWORD=quickcommerce_pass123
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    command: sh -c "cd /app && mvn spring-boot:run"
+    depends_on:
+      - eureka-server
+      - postgres-payment
+      - kafka
+    networks:
+      - quickcommerce
+
+  # Zookeeper (required for Kafka)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: quickcommerce-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_INIT_LIMIT: 5
+    ports:
+      - "2181:2181"
+    networks:
+      - quickcommerce
+
+  # Kafka Message Broker
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: quickcommerce-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - quickcommerce
+
+  # Kafka UI
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: quickcommerce-kafka-ui
+    depends_on:
+      - kafka
+    ports:
+      - "9080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: quickcommerce
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    networks:
+      - quickcommerce
+
+  # PostgreSQL - Product Service DB
+  postgres-product:
+    image: postgres:16-alpine
+    container_name: quickcommerce-product-db
+    environment:
+      POSTGRES_DB: quickcommerce_product
+      POSTGRES_USER: quickcommerce_user
+      POSTGRES_PASSWORD: quickcommerce_pass123
+      POSTGRES_INITDB_ARGS: "-c max_connections=200"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_product_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quickcommerce_user -d quickcommerce_product"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - quickcommerce
+
+  # PostgreSQL - Order Service DB
+  postgres-order:
+    image: postgres:16-alpine
+    container_name: quickcommerce-order-db
+    environment:
+      POSTGRES_DB: quickcommerce_order
+      POSTGRES_USER: quickcommerce_user
+      POSTGRES_PASSWORD: quickcommerce_pass123
+      POSTGRES_INITDB_ARGS: "-c max_connections=200"
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_order_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quickcommerce_user -d quickcommerce_order"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - quickcommerce
+
+  # PostgreSQL - Payment Service DB
+  postgres-payment:
+    image: postgres:16-alpine
+    container_name: quickcommerce-payment-db
+    environment:
+      POSTGRES_DB: quickcommerce_payment
+      POSTGRES_USER: quickcommerce_user
+      POSTGRES_PASSWORD: quickcommerce_pass123
+      POSTGRES_INITDB_ARGS: "-c max_connections=200"
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_payment_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quickcommerce_user -d quickcommerce_payment"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - quickcommerce
+
+  # PgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: quickcommerce-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@quickcommerce.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres-product
+      - postgres-order
+      - postgres-payment
+    networks:
+      - quickcommerce
+
+volumes:
+  postgres_product_data:
+  postgres_order_data:
+  postgres_payment_data:
+
+networks:
+  quickcommerce:
+    driver: bridge
