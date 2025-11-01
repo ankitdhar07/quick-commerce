@@ -1,0 +1,88 @@
+spring:
+  application:
+    name: product-service
+  datasource:
+    url: jdbc:postgresql://postgres-product:5432/quickcommerce_product
+    username: quickcommerce_user
+    password: quickcommerce_pass123
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        "[format_sql]": true
+        jdbc:
+          "[batch_size]": 20
+          "[fetch_size]": 50
+  flyway:
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    enabled: true
+    baseline-version: 0
+  kafka:
+    bootstrap-servers: kafka:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      bootstrap-servers: kafka:29092
+      group-id: product-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+
+server:
+  port: 8001
+  servlet:
+    context-path: /
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    hostname: product-service
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+    status-page-url: http://product-service:8001/actuator/health
+    health-check-url: http://product-service:8001/actuator/health
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+  simple:
+    metrics:
+      export:
+        enabled: true
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  api-docs:
+    path: /v3/api-docs
+  show-actuator: true
+
+logging:
+  level:
+    root: INFO
+    "[com.quickcommerce]": DEBUG
+    "[org.springframework.web]": INFO
+    "[org.springframework.data]": DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

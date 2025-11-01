@@ -1,0 +1,64 @@
+spring:
+  application:
+    name: order-service
+  datasource:
+    url: jdbc:postgresql://postgres-order:5432/quickcommerce_order
+    username: quickcommerce_user
+    password: quickcommerce_pass123
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    enabled: true
+  kafka:
+    bootstrap-servers: kafka:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      bootstrap-servers: kafka:29092
+      group-id: order-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+
+server:
+  port: 8002
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    hostname: order-service
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    com.quickcommerce: DEBUG
