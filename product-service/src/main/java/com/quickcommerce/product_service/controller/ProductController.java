@@ -1,7 +1,7 @@
-package com.quickcommerce.controller;
+package com.quickcommerce.product_service.controller;
 
-import com.quickcommerce.dto.ProductDTO;
-import com.quickcommerce.service.ProductService;
+import com.quickcommerce.product_service.dto.ProductDTO;
+import com.quickcommerce.product_service.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

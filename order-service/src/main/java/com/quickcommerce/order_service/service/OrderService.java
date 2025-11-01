@@ -1,8 +1,8 @@
-package com.quickcommerce.service;
+package com.quickcommerce.order_service.service;
 
-import com.quickcommerce.dto.OrderDTO;
-import com.quickcommerce.entity.Order;
-import com.quickcommerce.repository.OrderRepository;
+import com.quickcommerce.order_service.dto.OrderDTO;
+import com.quickcommerce.order_service.entity.Order;
+import com.quickcommerce.order_service.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;

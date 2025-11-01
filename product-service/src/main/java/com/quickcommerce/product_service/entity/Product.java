@@ -1,4 +1,4 @@
-package com.quickcommerce.entity;
+package com.quickcommerce.product_service.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

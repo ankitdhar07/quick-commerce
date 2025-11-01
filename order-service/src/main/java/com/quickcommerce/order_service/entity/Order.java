@@ -1,4 +1,4 @@
-package com.quickcommerce.entity;
+package com.quickcommerce.order_service.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

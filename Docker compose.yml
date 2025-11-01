@@ -3,7 +3,7 @@ version: '3.9'
 services:
   # Service Registry
   eureka-server:
-    image: openjdk:21-slim
+    image: maven:3.9.5-eclipse-temurin-21
     container_name: quickcommerce-eureka
     working_dir: /app
     volumes:
@@ -21,7 +21,7 @@ services:
 
   # API Gateway
   api-gateway:
-    image: openjdk:21-slim
+    image: maven:3.9.5-eclipse-temurin-21
     container_name: quickcommerce-api-gateway
     working_dir: /app
     volumes:
@@ -39,7 +39,7 @@ services:
 
   # Product Service
   product-service:
-    image: openjdk:21-slim
+    image: maven:3.9.5-eclipse-temurin-21
     container_name: quickcommerce-product
     working_dir: /app
     volumes:
@@ -63,7 +63,7 @@ services:
 
   # Order Service
   order-service:
-    image: openjdk:21-slim
+    image: maven:3.9.5-eclipse-temurin-21
     container_name: quickcommerce-order
     working_dir: /app
     volumes:
@@ -87,7 +87,7 @@ services:
 
   # Payment Service
   payment-service:
-    image: openjdk:21-slim
+    image: maven:3.9.5-eclipse-temurin-21
     container_name: quickcommerce-payment
     working_dir: /app
     volumes:

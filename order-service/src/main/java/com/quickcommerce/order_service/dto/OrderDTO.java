@@ -1,7 +1,7 @@
-package com.quickcommerce.dto;
+package com.quickcommerce.order_service.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.quickcommerce.entity.Order;
+import com.quickcommerce.order_service.entity.Order;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

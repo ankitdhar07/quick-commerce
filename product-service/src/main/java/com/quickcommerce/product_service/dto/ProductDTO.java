@@ -1,9 +1,9 @@
-package com.quickcommerce.dto;
+package com.quickcommerce.product_service.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.quickcommerce.entity.Product;
+import com.quickcommerce.product_service.entity.Product;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;

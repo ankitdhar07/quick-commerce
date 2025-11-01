@@ -1,11 +1,11 @@
-package com.quickcommerce.repository;
+package com.quickcommerce.product_service.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.quickcommerce.entity.Product;
+import com.quickcommerce.product_service.entity.Product;
 import java.util.List;
 import java.util.Optional;
 

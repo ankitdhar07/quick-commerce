@@ -1,4 +1,4 @@
-package com.quickcommerce.service;
+package com.quickcommerce.product_service.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,9 +7,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.quickcommerce.dto.ProductDTO;
-import com.quickcommerce.entity.Product;
-import com.quickcommerce.repository.Productrepository;
+import com.quickcommerce.product_service.dto.ProductDTO;
+import com.quickcommerce.product_service.entity.Product;
+import com.quickcommerce.product_service.repository.Productrepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
