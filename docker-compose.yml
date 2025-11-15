@@ -3,7 +3,7 @@ version: '3.9'
 services:
   # Service Registry
   eureka-server:
-    image: maven:3.9.5-eclipse-temurin-21
+    image: maven:3.9.9-eclipse-temurin-21
     container_name: quickcommerce-eureka
     working_dir: /app
     volumes:
@@ -21,7 +21,7 @@ services:
 
   # API Gateway
   api-gateway:
-    image: maven:3.9.5-eclipse-temurin-21
+    image: maven:3.9.9-eclipse-temurin-21
     container_name: quickcommerce-api-gateway
     working_dir: /app
     volumes:
@@ -39,7 +39,7 @@ services:
 
   # Product Service
   product-service:
-    image: maven:3.9.5-eclipse-temurin-21
+    image: maven:3.9.9-eclipse-temurin-21
     container_name: quickcommerce-product
     working_dir: /app
     volumes:
@@ -63,7 +63,7 @@ services:
 
   # Order Service
   order-service:
-    image: maven:3.9.5-eclipse-temurin-21
+    image: maven:3.9.9-eclipse-temurin-21
     container_name: quickcommerce-order
     working_dir: /app
     volumes:
@@ -87,7 +87,7 @@ services:
 
   # Payment Service
   payment-service:
-    image: maven:3.9.5-eclipse-temurin-21
+    image: maven:3.9.9-eclipse-temurin-21
     container_name: quickcommerce-payment
     working_dir: /app
     volumes:
@@ -111,7 +111,7 @@ services:
 
   # Zookeeper (required for Kafka)
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
+    image: confluentinc/cp-zookeeper:7.7.0
     container_name: quickcommerce-zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -124,7 +124,7 @@ services:
 
   # Kafka Message Broker
   kafka:
-    image: confluentinc/cp-kafka:7.5.0
+    image: confluentinc/cp-kafka:7.7.0
     container_name: quickcommerce-kafka
     depends_on:
       - zookeeper
@@ -159,7 +159,7 @@ services:
 
   # PostgreSQL - Product Service DB
   postgres-product:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     container_name: quickcommerce-product-db
     environment:
       POSTGRES_DB: quickcommerce_product
